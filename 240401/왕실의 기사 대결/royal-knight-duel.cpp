@@ -160,8 +160,8 @@ bool push(bool is_first, int n, int d) {
 
 void simulate() {
     for (int i = 0; i < Q; i++) {
-        if(knights[orders[i].first].k <= 0)
-            continue;
+        // if(knights[orders[i].first].k <= 0)
+        //     continue;
         push(true, orders[i].first, orders[i].second);
     }
 }
