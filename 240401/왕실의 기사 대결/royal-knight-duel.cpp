@@ -15,7 +15,7 @@ int L, N, Q;
 int map[41][41];
 int knight_map[41][41];
 vector<pair<int, int>> orders;
-vector<knight> knights;
+knight knights[31];
 vector<int> health; 
 int dx[4] = {-1, 0, 1, 0};
 int dy[4] = {0, 1, 0, -1};
@@ -31,7 +31,8 @@ void input() {
     for (int i = 0; i < N; i++) {
         int r, c, h, w, k;
         cin >> r >> c >> h >> w >> k;
-        knights.push_back({r - 1, c - 1, h, w, k});
+        knight tmp = {r - 1, c - 1, h, w, k};
+        knights[i] = tmp;
         health.push_back(k);
 
         for(int ii = r; ii < r + h; ii++) {
