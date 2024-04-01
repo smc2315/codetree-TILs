@@ -78,16 +78,18 @@ bool push(bool is_first, int n, int d) {
         if(cur.r == 0) {
             return false;
         }
-        
+        for (int i = cur.c; i < cur.c + cur.w; i++) {
+            if (map[cur.c - 1][i] == 2) {
+                    return false;
+            }
+        }
         for (int i = cur.c; i < cur.c + cur.w; i++) {
             if (knight_map[cur.r - 1][i] && knights[knight_map[cur.r - 1][i] - 1].k > 0) {
                 if (!push(false, knight_map[cur.r - 1][i] - 1, d)){
                     return false;
                 }
             }
-            if (map[cur.c - 1][i] == 2) {
-                    return false;
-            }
+            
         }
     }
     else if (d == 1) {
@@ -95,19 +97,27 @@ bool push(bool is_first, int n, int d) {
             return false;
         }
         for (int i = cur.r; i < cur.r + cur.h; i++) {
+            if (map[i][cur.c + cur.w] == 2) {
+                    return false;
+            }
+        }
+        for (int i = cur.r; i < cur.r + cur.h; i++) {
             if (knight_map[i][cur.c + cur.w] && knights[knight_map[i][cur.c + cur.w] - 1].k > 0) {
                 if (!push(false, knight_map[i][cur.c + cur.w] - 1, d)) {
                     return false;
                 }
             }
-            if (map[i][cur.c + cur.w] == 2) {
-                    return false;
-            }
+            
         }
     }
     else if (d == 2) {
         if(cur.r + cur.h == L) {
             return false;
+        }
+        for (int i = cur.c; i < cur.c + cur.w; i++) {
+            if (map[cur.r + cur.h][i] == 2) {
+                    return false;
+            }
         }
         for (int i = cur.c; i < cur.c + cur.w; i++) {
             if (knight_map[cur.r + cur.h][i] && knights[knight_map[cur.r + cur.h][i] - 1].k > 0) {
@@ -116,9 +126,7 @@ bool push(bool is_first, int n, int d) {
                 }
                 
             }
-            if (map[cur.r + cur.h][i] == 2) {
-                    return false;
-                }
+            
         }
     }
     else {
@@ -126,14 +134,17 @@ bool push(bool is_first, int n, int d) {
             return false;
         }
         for (int i = cur.r; i < cur.r + cur.h; i++) {
+            if (map[i][cur.c - 1] == 2) {
+                    return false;
+            }
+        }
+        for (int i = cur.r; i < cur.r + cur.h; i++) {
             if (knight_map[i][cur.c - 1] && knights[knight_map[i][cur.c - 1] - 1].k > 0) {
                 if (!push(false, knight_map[i][cur.c - 1] - 1, d)) {
                     return false;
                 }   
             }
-            if (map[i][cur.c - 1] == 2) {
-                    return false;
-            }
+            
         }
     }
     move(n, d);
@@ -156,7 +167,14 @@ void simulate() {
         cin >> index >> d;
         if(knights[index - 1].k <= 0)
             continue;
+       //cout<<"case: "<<i<<endl;
         push(true, index - 1, d);
+        // for(int ii=0;ii<L;ii++){
+        //     for(int j =0;j<L;j++) {
+        //         cout<<knight_map[ii][j]<<" ";
+        //     }
+        //     cout<<endl;
+        // }
     }
 }
 
@@ -172,6 +190,12 @@ void result() {
 
 int main() {
     input();
+    // for(int ii=0;ii<L;ii++){
+    //         for(int j =0;j<L;j++) {
+    //             cout<<knight_map[ii][j]<<" ";
+    //         }
+    //         cout<<endl;
+    //     }
     simulate();
     result();
     return 0;
