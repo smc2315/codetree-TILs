@@ -156,6 +156,7 @@ bool push(bool is_first, int n, int d) {
                     bomb_cnt++;
             }
         }
+        //cout<<bomb_cnt<<endl;
         cur.k -= bomb_cnt;
     }
     return true;
@@ -167,20 +168,23 @@ void simulate() {
         cin >> index >> d;
         if(knights[index - 1].k <= 0)
             continue;
-       //cout<<"case: "<<i<<endl;
+        //cout<<"case: "<< i + 1<< ", "<<index<<" "<<d<<endl;
         push(true, index - 1, d);
+        if(i > 0) {
         // for(int ii=0;ii<L;ii++){
         //     for(int j =0;j<L;j++) {
         //         cout<<knight_map[ii][j]<<" ";
         //     }
         //     cout<<endl;
         // }
+        }
     }
 }
 
 void result() {
     int ans = 0;
     for(int i = 0; i < N; i++) {
+        cout<<knights[i].k<<endl;
         if(knights[i].k > 0) {
             ans += health[i] - knights[i].k;
         }
