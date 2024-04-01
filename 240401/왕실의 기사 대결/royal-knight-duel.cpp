@@ -184,7 +184,7 @@ void simulate() {
 void result() {
     int ans = 0;
     for(int i = 0; i < N; i++) {
-        cout<<knights[i].k<<endl;
+        //cout<<knights[i].k<<endl;
         if(knights[i].k > 0) {
             ans += health[i] - knights[i].k;
         }
