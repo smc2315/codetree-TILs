@@ -1,206 +1,113 @@
 #include <iostream>
-#include <vector>
+#include <queue>
 
 using namespace std;
 
-struct knight {
-    int r;
-    int c;
-    int h;
-    int w;
-    int k;
-};
+#define MAX_N 31
+#define MAX_L 41
 
-int L, N, Q;
-int map[41][41];
-int knight_map[41][41];
-knight knights[31];
-vector<int> health; 
-int dx[4] = {-1, 0, 1, 0};
-int dy[4] = {0, 1, 0, -1};
+int l, n, q;
+int info[MAX_L][MAX_L];
+int bef_k[MAX_N];
+int r[MAX_N], c[MAX_N], h[MAX_N], w[MAX_N], k[MAX_N];
+int nr[MAX_N], nc[MAX_N];
+int dmg[MAX_N];
+bool is_moved[MAX_N];
 
-void input() {
-    cin >> L >> N >> Q;
-    for (int i = 0; i < L; i++) {
-        for (int j = 0; j < L; j++) {
-            cin >> map[i][j];
-        }
+int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, 1, 0, -1};
+
+// 움직임을 시도해봅니다.
+bool TryMovement(int idx, int dir) {
+    // 초기화 작업입니다.
+    for(int i = 1; i <= n; i++) {
+        dmg[i] = 0;
+        is_moved[i] = false;
+        nr[i] = r[i];
+        nc[i] = c[i];
     }
 
-    for (int i = 0; i < N; i++) {
-        int r, c, h, w, k;
-        cin >> r >> c >> h >> w >> k;
-        knight tmp = {r - 1, c - 1, h, w, k};
-        knights[i] = tmp;
-        health.push_back(k);
+    queue<int> q;
 
-        for(int ii = r; ii < r + h; ii++) {
-            for(int jj = c; jj < c + w; jj++) {
-                knight_map[ii - 1][jj - 1] = i + 1;
-            }
-        }
-    }
-}
+    q.push(idx);
+    is_moved[idx] = true;
 
-void move(int n, int d) {
-    knight& cur = knights[n];
-    if (d == 0) {
-        for (int i = cur.c; i < cur.c + cur.w; i++) {
-            knight_map[cur.r + cur.h - 1][i] = 0;
-            knight_map[cur.r - 1][i] = n + 1;
-        }
-    }
-    else if (d == 1) {
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            knight_map[i][cur.c] = 0;
-            knight_map[i][cur.c + cur.w] = n + 1;
-        }
-    }
-    else if (d == 2) {
-        for (int i = cur.c; i < cur.c + cur.w; i++) {
-            knight_map[cur.r][i] = 0;
-            knight_map[cur.r + cur.h][i] = n + 1;
-        }
-    }
-    else {
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            knight_map[i][cur.c + cur.w - 1] = 0;
-            knight_map[i][cur.c - 1] = n + 1;
-        }
-    }
-    cur.r += dx[d];
-    cur.c += dy[d];
-}
+    while(!q.empty()) {
+        int x = q.front(); q.pop();
 
-bool push(bool is_first, int n, int d) {
-    knight& cur = knights[n];
-    if (d == 0) {
-        if(cur.r == 0) {
+        nr[x] += dx[dir];
+        nc[x] += dy[dir];
+
+        // 경계를 벗어나는지 체크합니다.
+        if(nr[x] < 1 || nc[x] < 1 || nr[x] + h[x] - 1 > l || nc[x] + w[x] - 1 > l)
             return false;
-        }
-        for (int i = cur.c; i < cur.c + cur.w; i++) {
-            if (map[cur.r - 1][i] == 2) {
+
+        // 대상 조각이 다른 조각이나 장애물과 충돌하는지 검사합니다.
+        for(int i = nr[x]; i <= nr[x] + h[x] - 1; i++) {
+            for(int j = nc[x]; j <= nc[x] + w[x] - 1; j++) {
+                if(info[i][j] == 1) 
+                    dmg[x]++;
+                if(info[i][j] == 2)
                     return false;
             }
         }
-        for (int i = cur.c; i < cur.c + cur.w; i++) {
-            if (knight_map[cur.r - 1][i] && knights[knight_map[cur.r - 1][i] - 1].k > 0) {
-                if (!push(false, knight_map[cur.r - 1][i] - 1, d)){
-                    return false;
-                }
-            }
-            
+
+        // 다른 조각과 충돌하는 경우, 해당 조각도 같이 이동합니다.
+        for(int i = 1; i <= n; i++) {
+            if(is_moved[i] || k[i] <= 0) 
+                continue;
+            if(r[i] > nr[x] + h[x] - 1 || nr[x] > r[i] + h[i] - 1) 
+                continue;
+            if(c[i] > nc[x] + w[x] - 1 || nc[x] > c[i] + w[i] - 1) 
+                continue;
+
+            is_moved[i] = true;
+            q.push(i);
         }
     }
-    else if (d == 1) {
-        if(cur.c + cur.w == L) {
-            return false;
-        }
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            if (map[i][cur.c + cur.w] == 2) {
-                    return false;
-            }
-        }
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            if (knight_map[i][cur.c + cur.w] && knights[knight_map[i][cur.c + cur.w] - 1].k > 0) {
-                if (!push(false, knight_map[i][cur.c + cur.w] - 1, d)) {
-                    return false;
-                }
-            }
-            
-        }
-    }
-    else if (d == 2) {
-        if(cur.r + cur.h == L) {
-            return false;
-        }
-        for (int i = cur.c; i < cur.c + cur.w; i++) {
-            if (map[cur.r + cur.h][i] == 2) {
-                    return false;
-            }
-        }
-        for (int i = cur.c; i < cur.c + cur.w; i++) {
-            if (knight_map[cur.r + cur.h][i] && knights[knight_map[cur.r + cur.h][i] - 1].k > 0) {
-                if (!push(false, knight_map[cur.r + cur.h][i] - 1, d)) {
-                    return false;
-                }
-                
-            }
-            
-        }
-    }
-    else {
-        if(cur.c == 0) {
-            return false;
-        }
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            if (map[i][cur.c - 1] == 2) {
-                    return false;
-            }
-        }
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            if (knight_map[i][cur.c - 1] && knights[knight_map[i][cur.c - 1] - 1].k > 0) {
-                if (!push(false, knight_map[i][cur.c - 1] - 1, d)) {
-                    return false;
-                }   
-            }
-            
-        }
-    }
-    move(n, d);
-    if (!is_first) {
-        int bomb_cnt = 0;
-        for (int i = cur.r; i < cur.r + cur.h; i++) {
-            for(int j = cur.c; j < cur.c + cur.w; j++) {
-                if(map[i][j] == 1)
-                    bomb_cnt++;
-            }
-        }
-        //cout<<bomb_cnt<<endl;
-        cur.k -= bomb_cnt;
-    }
+
+    dmg[idx] = 0;
     return true;
 }
 
-void simulate() {
-    for (int i = 0; i < Q; i++) {
-        int index, d;
-        cin >> index >> d;
-        if(knights[index - 1].k <= 0)
-            continue;
-        //cout<<"case: "<< i + 1<< ", "<<index<<" "<<d<<endl;
-        push(true, index - 1, d);
-        // if(i > 0) {
-        // for(int ii=0;ii<L;ii++){
-        //     for(int j =0;j<L;j++) {
-        //         cout<<knight_map[ii][j]<<" ";
-        //     }
-        //     cout<<endl;
-        // }
-        // }
-    }
-}
+// 특정 조각을 지정된 방향으로 이동시키는 함수입니다.
+void MovePiece(int idx, int dir) {
+    if(k[idx] <= 0) 
+        return;
 
-void result() {
-    int ans = 0;
-    for(int i = 0; i < N; i++) {
-        //cout<<knights[i].k<<endl;
-        if(knights[i].k > 0) {
-            ans += health[i] - knights[i].k;
+    // 이동이 가능한 경우, 실제 위치와 체력을 업데이트합니다.
+    if(TryMovement(idx, dir)) {
+        for(int i = 1; i <= n; i++) {
+            r[i] = nr[i];
+            c[i] = nc[i];
+            k[i] -= dmg[i];
         }
     }
-    cout<<ans;
 }
 
 int main() {
-    input();
-    // for(int ii=0;ii<L;ii++){
-    //         for(int j =0;j<L;j++) {
-    //             cout<<knight_map[ii][j]<<" ";
-    //         }
-    //         cout<<endl;
-    //     }
-    simulate();
-    result();
+    // 입력값을 받습니다.
+    cin >> l >> n >> q;
+    for(int i = 1; i <= l; i++)
+        for(int j = 1; j <= l; j++)
+            cin >> info[i][j];
+    for(int i = 1; i <= n; i++) {
+        cin >> r[i] >> c[i] >> h[i] >> w[i] >> k[i];
+        bef_k[i] = k[i];
+    }
+    for(int i = 1; i <= q; i++) {
+        int idx, dir;
+        cin >> idx >> dir;
+        MovePiece(idx, dir);
+    }
+
+    // 결과를 계산하고 출력합니다.
+    long long ans = 0;
+    for(int i = 1; i <= n; i++) {
+        if(k[i] > 0) {
+            ans += bef_k[i] - k[i];
+        }
+    }
+
+    cout << ans;
     return 0;
 }
