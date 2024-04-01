@@ -50,6 +50,8 @@ void input() {
 
 void move(int n, int d) {
     knight& cur = knights[n];
+    if(cur.k <= 0)
+        return;
     if (d == 0) {
         for (int i = cur.c; i < cur.c + cur.w; i++) {
             knight_map[cur.r + cur.h - 1][i] = 0;
@@ -59,13 +61,13 @@ void move(int n, int d) {
     else if (d == 1) {
         for (int i = cur.r; i < cur.r + cur.h; i++) {
             knight_map[i][cur.c] = 0;
-            knight_map[i][cur.c + cur.w] = n + 1;
+            knight_map[i][cur.c + cur.w - 1] = n + 1;
         }
     }
     else if (d == 2) {
         for (int i = cur.c; i < cur.c + cur.w; i++) {
             knight_map[cur.r][i] = 0;
-            knight_map[cur.r + cur.h][i] = n + 1;
+            knight_map[cur.r + cur.h - 1][i] = n + 1;
         }
     }
     else {
@@ -158,6 +160,8 @@ bool push(bool is_first, int n, int d) {
 
 void simulate() {
     for (int i = 0; i < Q; i++) {
+        if(knights[orders[i].first].k <= 0)
+            continue;
         push(true, orders[i].first, orders[i].second);
     }
 }
