@@ -154,9 +154,9 @@ void simulate() {
     for (int i = 0; i < Q; i++) {
         int index, d;
         cin >> index >> d;
-        if(knights[index].k <= 0)
+        if(knights[index - 1].k <= 0)
             continue;
-        push(true, index, d);
+        push(true, index - 1, d);
     }
 }
 
