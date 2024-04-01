@@ -79,7 +79,7 @@ bool push(bool is_first, int n, int d) {
             return false;
         }
         for (int i = cur.c; i < cur.c + cur.w; i++) {
-            if (map[cur.c - 1][i] == 2) {
+            if (map[cur.r - 1][i] == 2) {
                     return false;
             }
         }
@@ -170,14 +170,14 @@ void simulate() {
             continue;
         //cout<<"case: "<< i + 1<< ", "<<index<<" "<<d<<endl;
         push(true, index - 1, d);
-        if(i > 0) {
+        // if(i > 0) {
         // for(int ii=0;ii<L;ii++){
         //     for(int j =0;j<L;j++) {
         //         cout<<knight_map[ii][j]<<" ";
         //     }
         //     cout<<endl;
         // }
-        }
+        // }
     }
 }
 
