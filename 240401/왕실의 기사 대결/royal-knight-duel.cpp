@@ -14,7 +14,6 @@ struct knight {
 int L, N, Q;
 int map[41][41];
 int knight_map[41][41];
-vector<pair<int, int>> orders;
 knight knights[31];
 vector<int> health; 
 int dx[4] = {-1, 0, 1, 0};
@@ -40,12 +39,6 @@ void input() {
                 knight_map[ii - 1][jj - 1] = i + 1;
             }
         }
-    }
-
-    for (int i = 0; i < Q; i++) {
-        int index, d;
-        cin >> index >> d;
-        orders.push_back({index - 1, d});
     }
 }
 
@@ -159,9 +152,11 @@ bool push(bool is_first, int n, int d) {
 
 void simulate() {
     for (int i = 0; i < Q; i++) {
-        if(knights[orders[i].first].k <= 0)
+        int index, d;
+        cin >> index >> d;
+        if(knights[index].k <= 0)
             continue;
-        push(true, orders[i].first, orders[i].second);
+        push(true, index, d);
     }
 }
 
